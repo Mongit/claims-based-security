@@ -27,8 +27,8 @@ namespace AuthenticationTest
             .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme,
                 options =>
                 {
-                    options.LoginPath = new PathString("/home/login");
-                    options.AccessDeniedPath = new PathString("/home/denied");
+                    options.LoginPath = new PathString("/auth/login");
+                    options.AccessDeniedPath = new PathString("/auth/denied");
                 });
                 services.AddMvc();
         }
