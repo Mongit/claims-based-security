@@ -6,11 +6,19 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 
 namespace AuthenticationTest.Controllers
 {
     public class AuthController : Controller
     {
+        private IConfiguration _config;
+
+        public AuthController(IConfiguration Configuration)
+        {
+            this._config = Configuration;
+        }
+
         //Auth/Login
         public IActionResult Login()
         {
@@ -22,11 +30,14 @@ namespace AuthenticationTest.Controllers
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> LoginUser(string returnUrl, string username, string password)
         {
+            var self = this;
+            var Issuer = self._config.GetValue<string>("myUrl");
+
             if (username == "Jon" && password == "jon")
             {
                 var claims = new List<Claim>
                     {
-                        new Claim(ClaimTypes.Name, "jon", ClaimValueTypes.String, "http://localhost:50226/")
+                        new Claim(ClaimTypes.Name, "jon", ClaimValueTypes.String, Issuer)
                     };
                 var userIdentity = new ClaimsIdentity(claims, "SecureLogin");
                 var userPrincipal = new ClaimsPrincipal(userIdentity);
@@ -42,7 +53,7 @@ namespace AuthenticationTest.Controllers
 
                 return GoToReturnUrl(returnUrl);
             }
-            return RedirectToAction("Login", "Home");
+            return RedirectToAction("Login", "Auth");
         }
 
         private IActionResult GoToReturnUrl(string returnUrl)
